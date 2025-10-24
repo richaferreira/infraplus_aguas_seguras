@@ -67,3 +67,5 @@ cp .env.example .env   # VITE_API_URL=http://localhost:3000
 pnpm i
 pnpm dev
 ```
+
+..
