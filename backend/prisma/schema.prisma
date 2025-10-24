@@ -1,0 +1,66 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  CITIZEN
+  ADMIN
+}
+
+enum ReportStatus {
+  ABERTA
+  EM_ANALISE
+  RESOLVIDA
+  REJEITADA
+}
+
+enum Category {
+  FALTA_AGUA
+  VAZAMENTO
+  QUALIDADE
+  OUTROS
+}
+
+model User {
+  id           Int       @id @default(autoincrement())
+  name         String
+  email        String    @unique
+  passwordHash String
+  role         Role      @default(CITIZEN)
+  reports      Report[]
+  comments     Comment[]
+  createdAt    DateTime  @default(now())
+}
+
+model Report {
+  id          Int          @id @default(autoincrement())
+  title       String
+  description String
+  category    Category
+  status      ReportStatus @default(ABERTA)
+  lat         Float
+  lng         Float
+  address     String?
+  userId      Int
+  user        User         @relation(fields: [userId], references: [id])
+  comments    Comment[]
+  createdAt   DateTime     @default(now())
+
+  imagesJson  String?      @db.Text
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  reportId  Int
+  report    Report   @relation(fields: [reportId], references: [id])
+  createdAt DateTime @default(now())
+}
